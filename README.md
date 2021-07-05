@@ -31,7 +31,10 @@ Install required libraries inside venv:
 ```sh
 python3.6 -m pip install setuptools wheel slick-bitcoinrpc
 ```
-
+To deactivate the virtual environment:
+```sh
+deactivate
+```
 
 ### Installing mySQL Server 
 First, update the apt package index by:
