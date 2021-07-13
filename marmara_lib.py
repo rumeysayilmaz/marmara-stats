@@ -23,8 +23,6 @@ def marmara_list_addresses(marmara_proxy):
     return marmara_addresses_list
 
 
-
-
 """ 
 String -> slickrpc.Proxy
 creating proxy object for provided ac_name by searching for rpc credentials locally 
@@ -94,3 +92,11 @@ stops the MCL daemon proxy
 def stop_chain(marmara_proxy):
     print("Stopping daemon")
     marmara_proxy.stop()
+
+
+def get_block_time(marmara_proxy, height):
+    try:
+        block_time = marmara_proxy.getblock(height)['time']
+    except Exception:
+        raise Exception("Connection error!")
+    return block_time
