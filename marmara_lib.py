@@ -63,8 +63,7 @@ def def_credentials(chain, mode="usual"):
 
 
 """
-slickrpc.Proxy -> List
-returns list TotalNormals, TotalActivated, TotalLockedInLoops with marmaraamountstat for provided MCL daemon proxy
+returns marmaraamountstat for provided MCL daemon proxy
 """
 
 
@@ -88,6 +87,11 @@ stops the MCL daemon proxy
 def stop_chain(marmara_proxy):
     print("Stopping daemon")
     marmara_proxy.stop()
+
+
+"""
+gets the blocktime for a given height
+"""
 
 
 def get_block_time(marmara_proxy, height):
