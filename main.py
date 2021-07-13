@@ -1,88 +1,70 @@
+import time
+
 import marmaradb
 from marmara_lib import *
 
-BEGIN_HEIGHT = 1
+Height = 1
 chain_name = "MCL"
 
 rpc_connection = def_credentials(chain_name)
-
+i = 0  # for test
 while True:
     try:
-        print(rpc_connection.getinfo())
-
         block = rpc_connection.getinfo()['blocks']
-        stat_last_record = marmaradb.read_record('SELECT * FROM marmarastat ORDER BY id DESC LIMIT 1')
-        print(block)
-        print(stat_last_record[0])
-        stat_last_record_id = stat_last_record[0]
+        stat_last_record = marmaradb.read_record('SELECT * FROM marmarastat ORDER BY height DESC LIMIT 1')
+        last_record = stat_last_record[0]
         stat_last_record_connection = stat_last_record[1]
         stat_last_record_cursor = stat_last_record[2]
-        print(stat_last_record[1])
-        if not stat_last_record_id == []:
-            last_id = stat_last_record_id[0][0]
-            print(last_id)
-            BEGIN_HEIGHT = last_id + 1
-            print(BEGIN_HEIGHT)
-        if BEGIN_HEIGHT <= (block - 5):
-            BeginHeight = BEGIN_HEIGHT
-            EndHeight = BEGIN_HEIGHT + 1
-            stat_rpc_result = marmara_amount_stat(rpc_connection, str(BeginHeight), str(EndHeight))
+        print(last_record)
+        if not last_record:  # if no record
+            Height = 1
+        elif last_record:
+            Height = last_record[0][0] + 1  # last_record[0] bring the record , last_record[0][0] = Height in record
+            print(Height)
+        if Height <= (block - 3):
+            BlockTime = get_block_time(rpc_connection, str(Height))
+            stat_rpc_result = marmara_amount_stat(rpc_connection, str(Height), str(Height))
             TotalNormals = stat_rpc_result['TotalNormals']
             TotalActivated = stat_rpc_result['TotalActivated']
             TotalLockedInLoops = stat_rpc_result['TotalLockedInLoops']
-            insert_marmara_stat_query = "INSERT INTO " \
-                                        "marmarastat(BeginHeight, EndHeight, TotalNormals, " \
-                                        "TotalActivated, TotalLockedInLoops) " \
-                                        "VALUES (%s, %s, %s, %s, %s)"
-
-            args = [BeginHeight, EndHeight, TotalNormals, TotalActivated, TotalLockedInLoops]
-            insert_to_db = marmaradb.insert_record_set(insert_marmara_stat_query, args)
-            marmaradb.close_connection(stat_last_record_connection, stat_last_record_cursor)
-
-        break
+            SpentNormals = stat_rpc_result['SpentNormals']
+            SpentActivated = stat_rpc_result['SpentActivated']
+            SpentLockedInLoops = stat_rpc_result['SpentLockedInLoops']
+            if Height == 1:
+                CalculatedTotalNormals = TotalNormals
+                CalculatedTotalActivated = TotalActivated
+                CalculatedTotalLockedInLoops = TotalLockedInLoops
+                insert_marmara_stat_query = "INSERT INTO " \
+                                                    "marmarastat(Height, TotalNormals, TotalActivated, TotalLockedInLoops, " \
+                                                "SpentNormals, SpentActivated, SpentLockedInLoops, BlockTime, " \
+                                                "CalculatedTotalNormals, CalculatedTotalActivated, CalculatedTotalLockedInLoops) " \
+                                                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                args = [Height, TotalNormals, TotalActivated, TotalLockedInLoops, SpentNormals, SpentActivated, SpentLockedInLoops,
+                        BlockTime, CalculatedTotalNormals, CalculatedTotalActivated, CalculatedTotalLockedInLoops]
+                insert_to_db = marmaradb.insert_record_set(insert_marmara_stat_query, args)
+                marmaradb.close_connection(stat_last_record_connection, stat_last_record_cursor)
+            if Height > 1:
+                CalculatedTotalNormals = TotalNormals - SpentNormals + float(last_record[0][8])  # last_record[0][8] CalculatedTotalNormals from last record
+                CalculatedTotalActivated = TotalActivated - SpentActivated + float(last_record[0][9])  # last_record[0][9] CalculatedTotalActivated from last record
+                CalculatedTotalLockedInLoops = TotalLockedInLoops - SpentLockedInLoops + float(last_record[0][10])  # last_record[0][10] CalculatedTotalLockedInLoops from last record
+                insert_marmara_stat_query = "INSERT INTO " \
+                                            "marmarastat(Height, TotalNormals, TotalActivated, TotalLockedInLoops, " \
+                                            "SpentNormals, SpentActivated, SpentLockedInLoops, BlockTime, " \
+                                            "CalculatedTotalNormals, CalculatedTotalActivated, CalculatedTotalLockedInLoops) " \
+                                            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                args = [Height, TotalNormals, TotalActivated, TotalLockedInLoops, SpentNormals, SpentActivated,
+                        SpentLockedInLoops,
+                        BlockTime, CalculatedTotalNormals, CalculatedTotalActivated, CalculatedTotalLockedInLoops]
+                insert_to_db = marmaradb.insert_record_set(insert_marmara_stat_query, args)
+                marmaradb.close_connection(stat_last_record_connection, stat_last_record_cursor)
+        if Height > (block-5):
+            time.sleep(30)
+        # test ----------
+        i = i + 1
+        if i == 500000:
+            break
+        # --------------
     except Exception as e:
         print(e)
         print("Daemon is not ready for RPC calls. Lets wait")
         time.sleep(10)
-    # else:
-    #     print("Successfully connected!\n")
-    #     break
-
-# try:
-#     db_connection = mysql.connector.connect(
-#         host="localhost",
-#         user="admin",
-#         password="****",
-#         database="marmara",
-#     )
-#     show_table_query = "SHOW TABLES"
-#     execute_sql(db_connection, show_table_query)
-#
-#     insert_marmara_stat_query = """
-#          INSERT INTO marmarastat
-#          (BeginHeight, EndHeight, TotalNormals, TotalActivated, TotalLockedInLoops)
-#          VALUES (%s, %s, %s, %s, %s, %s)
-#          """
-#     marmara_stat_records = [(1, 2, 0, 0, 0)]
-#     execute_sql_records(db_connection, insert_marmara_stat_query, marmara_stat_records)
-#
-#
-# except Error as e:
-#     print(e)
-
-# if __name__ == '__main__':
-# show_table_query = 'SHOW TABLES'
-# marmaradb.execute_sql(show_table_query)
-
-# x = conf_dir.stdout
-# print(x)
-# print('------------------------------------------')
-# # conf_dir = os.environ['HOME']
-# db_config_file = str(x) + '/db.conf'
-# print(db_config_file)
-#     insert_marmara_stat_query = """
-#     INSERT INTO marmarastat
-#     (BeginHeight, EndHeight, TotalNormals, TotalActivated, TotalLockedInLoops)
-#     VALUES ( %s, %s, %s, %s, %s)
-#     """
-#     marmara_stat_records = [(1, 2, 0, 0, 0)]
