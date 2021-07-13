@@ -112,6 +112,7 @@ CREATE TABLE marmarastat (
     SpentNormals float,
     SpentActivated float, 
     SpentLockedInLoops float,
+    BlockTime int,
     PRIMARY KEY (ID)
 );
 
