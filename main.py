@@ -1,3 +1,7 @@
+# Authors: Aklix, Rumeysayilmaz
+# Source: https://github.com/rumeysayilmaz/marmara-stats
+
+
 import time
 
 import marmaradb
