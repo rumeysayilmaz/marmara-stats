@@ -98,17 +98,27 @@ mysql -u admin -p
 
 ## Useful MySQL commands 
 show databases;
+
 create database marmara;
+
 use marmara;
+
 CREATE TABLE marmarastat (
     ID int NOT NULL AUTO_INCREMENT,
-    BeginHeight int NOT NULL,
-    EndHeight int NOT NULL,
+    Height int NOT NULL,
     TotalNormals float,
     TotalActivated float,
     TotalLockedInLoops float,
+    SpentNormals float,
+    SpentActivated float, 
+    SpentLockedInLoops float,
     PRIMARY KEY (ID)
 );
+
 show tables;
+
 SELECT user();
+
 DESCRIBE <table_name>;
+
+DROP TABLE <table_name>;
