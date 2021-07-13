@@ -72,11 +72,7 @@ def marmara_amount_stat(marmara_proxy, begin_height, end_height):
     while True:
         try:
             marmara_amount_stat_info = marmara_proxy.marmaraamountstat(begin_height, end_height)
-            print(marmara_amount_stat_info)
-            total_normals = marmara_amount_stat_info["TotalNormals"]
-            total_activated = marmara_amount_stat_info["TotalActivated"]
-            total_locked_in_loops = marmara_amount_stat_info["TotalLockedInLoops"]
-            return total_normals, total_activated, total_locked_in_loops
+            return marmara_amount_stat_info
             break
         except Exception as e:
             print(e)
