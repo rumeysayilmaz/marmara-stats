@@ -104,16 +104,18 @@ create database marmara;
 use marmara;
 
 CREATE TABLE marmarastat (
-    ID int NOT NULL AUTO_INCREMENT,
     Height int NOT NULL,
-    TotalNormals float,
-    TotalActivated float,
-    TotalLockedInLoops float,
-    SpentNormals float,
-    SpentActivated float, 
-    SpentLockedInLoops float,
+    TotalNormals decimal(23,8),
+    TotalActivated decimal(23,8),
+    TotalLockedInLoops decimal(23,8),
+    SpentNormals decimal(23,8),
+    SpentActivated decimal(23,8),
+    SpentLockedInLoops decimal(23,8),
     BlockTime int,
-    PRIMARY KEY (ID)
+    CalculatedTotalNormals decimal(23,8),
+    CalculatedTotalActivated decimal(23,8),
+    CalculatedTotalLockedInLoops decimal(23,8),
+    PRIMARY KEY (Height)
 );
 
 show tables;
