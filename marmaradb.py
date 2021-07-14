@@ -1,4 +1,7 @@
-import os, json
+# Authors: Aklix, Rumeysayilmaz
+# Source: https://github.com/rumeysayilmaz/marmara-stats
+
+import os
 import os.path
 from mysql.connector import connect, Error
 import mysql.connector
