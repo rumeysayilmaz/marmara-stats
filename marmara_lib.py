@@ -9,19 +9,6 @@ import math
 import requests
 import json
 
-"""
-slickrpc.Proxy -> List
-returns list with marmaraactivated addresses for provided MCL daemon proxy
-"""
-
-
-def marmara_list_addresses(marmara_proxy):
-    marmara_list_activated_addresses = marmara_proxy.marmaralistactivatedaddresses()["WalletActivatedAddresses"]
-    marmara_addresses_list = []
-    for entry in marmara_list_activated_addresses:
-        marmara_addresses_list.append(entry["activatedaddress"])
-    return marmara_addresses_list
-
 
 """ 
 String -> slickrpc.Proxy
