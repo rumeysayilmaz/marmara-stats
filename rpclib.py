@@ -5,7 +5,6 @@
 
 import re
 import os
-import http
 import platform
 from slickrpc import Proxy
 
