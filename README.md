@@ -30,9 +30,12 @@ source venv/bin/activate
 Install required libraries inside venv:
 ```sh
 python3.6 -m pip install setuptools wheel slick-bitcoinrpc
+sudo apt install python-pip
 ```
-
-
+Install required libraries inside venv:
+```sh
+pip install -r requirement
+```
 ### Installing mySQL Server 
 First, update the apt package index by:
 ```sh
